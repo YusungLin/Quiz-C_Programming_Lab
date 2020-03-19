@@ -13,10 +13,10 @@ void bitcpy(void *_dest,      /* Address of the buffer to write to */
 {
     uint8_t data, original, mask;
     size_t bitsize;
-    size_t read_lhs = _read & 7;        // offset (the omitted bits) can be 7 at most because of uint8_t type
-    size_t read_rhs = 8 - read_lhs;     // process 8 bits at a time
-    const uint8_t *source = _src + (_read / 8);
-    size_t write_lhs = _write & KK1;    // offset (the reserved bits) can be 7 at most
+    size_t read_lhs = _read & 7;                // offset (the omitted bits) can be 7 at most because of uint8_t type
+    size_t read_rhs = 8 - read_lhs;             // process 8 bits at a time
+    const uint8_t *source = _src + (_read / 8); // the bits higher than rightmost 3 bits are element-wise offset
+    size_t write_lhs = _write & KK1;            // offset (the reserved bits) can be 7 at most
     size_t write_rhs = 8 - write_lhs;
     uint8_t *dest = _dest + (_write / 8);
 
