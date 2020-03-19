@@ -1,0 +1,16 @@
+pos(vec2,0)=13, pos(vec2,1)=42
+capacity(vec1)=4, capacity(vec2)=128
+pos(vec2,2)=88
+stack
+0.00 stack
+0.00 1.10 stack
+0.00 1.10 2.20 stack
+0.00 1.10 2.20 3.30 stack
+0.00 1.10 2.20 3.30 4.40 heap
+0.00 1.10 2.20 3.30 4.40 5.50 heap
+0.00 1.10 2.20 3.30 4.40 heap
+0.00 1.10 2.20 3.30 heap
+0.00 1.10 2.20 heap
+0.00 1.10 heap
+0.00 heap
+heap
