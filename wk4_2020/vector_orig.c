@@ -5,7 +5,6 @@
 #include <time.h>
 
 /* vector with small buffer optimization */
-#define FACTOR 1.5
 
 #define STRUCT_BODY(type)                                                  \
     struct {                                                               \
@@ -33,18 +32,9 @@
                 1;                                                      \
     name.capacity = sizeof(name.buf) / sizeof(name.buf[0])
 
-static double inline factor_power(size_t n)
-{
-    if (n)
-        return FACTOR * factor_power(n - 1);
-    return 1;
-}
-
 #define vec_size(v) v.size
-#define vec_capacity(v)                           \
-    v.on_heap ? (size_t) factor_power(v.capacity) \
-              : sizeof(v.buf) / sizeof(v.buf[0])
-// (v.on_heap ? (size_t)1 << v.capacity : sizeof(v.buf) / sizeof(v.buf[0]))
+#define vec_capacity(v) \
+    (v.on_heap ? (size_t) 1 << v.capacity : sizeof(v.buf) / sizeof(v.buf[0]))
 
 #define vec_data(v) (v.on_heap ? v.ptr : v.buf) /* always contiguous buffer */
 
@@ -119,19 +109,16 @@ static NON_NULL void __vec_push_back(void *restrict vec,
 
     if (v->on_heap) {
         if (v->size == capacity) {
-            // printf("# re-allocation\n");
-            v->ptr =  // realloc(v->ptr, elemsize * (size_t)1 << ++v->capacity);
-                realloc(v->ptr,
-                        elemsize * (size_t) factor_power(++v->capacity));
+            printf("# re-allocation\n");
+            v->ptr = realloc(v->ptr, elemsize * (size_t) 1 << ++v->capacity);
         }
         memcpy(&v->ptr[v->size++ * elemsize], e, elemsize);
     } else {
         if (v->size == capacity) {
-            // printf("# re-allocation\n");
+            printf("# re-allocation\n");
 
-            void *tmp =  // malloc(elemsize * (size_t)1 << (v->capacity =
-                         // capacity + 1));
-                malloc(elemsize * (size_t) factor_power(++v->capacity));
+            void *tmp =
+                malloc(elemsize * (size_t) 1 << (v->capacity = capacity + 1));
             memcpy(tmp, v->buf, elemsize * v->size);
             v->ptr = tmp;
             v->on_heap = 1;
@@ -231,7 +218,7 @@ void basic_test()
 
 int main()
 {
-    check_mem();
+    check_runtime();
 
     return 0;
 }
