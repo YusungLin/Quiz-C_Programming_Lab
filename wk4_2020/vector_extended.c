@@ -140,13 +140,10 @@ static NON_NULL void __vec_insert(void *restrict vec, void *restrict e, size_t e
     if (pos < 0)
         return;
 
-    size_t offset_size = elemsize * (v->size - pos);
     if (v->on_heap) {
         if (v->size == capacity)
             v->ptr = realloc(v->ptr, elemsize * (size_t) 1 << ++v->capacity);
-        char *offset_data[offset_size];
-        memcpy(offset_data, &v->ptr[pos * elemsize], offset_size);
-        memcpy(&v->ptr[(pos + 1) * elemsize], offset_data, offset_size);
+        memcpy(&v->ptr[(pos + 1) * elemsize], &v->ptr[pos * elemsize], elemsize * (v->size - pos));
         memcpy(&v->ptr[pos * elemsize], e, elemsize);
     } else {
         if (v->size == capacity) {
@@ -156,14 +153,10 @@ static NON_NULL void __vec_insert(void *restrict vec, void *restrict e, size_t e
             v->ptr = tmp;
             v->on_heap = 1;
 
-            char *offset_data[offset_size];
-            memcpy(offset_data, &v->ptr[pos * elemsize], offset_size);
-            memcpy(&v->ptr[(pos + 1) * elemsize], offset_data, offset_size);
+            memcpy(&v->ptr[(pos + 1) * elemsize], &v->ptr[pos * elemsize], elemsize * (v->size - pos));
             memcpy(&v->ptr[pos * elemsize], e, elemsize);
         } else {
-            char *offset_data[offset_size];
-            memcpy(offset_data, &v->ptr[pos * elemsize], offset_size);
-            memcpy(&v->ptr[(pos + 1) * elemsize], offset_data, offset_size);
+            memcpy(&v->ptr[(pos + 1) * elemsize], &v->ptr[pos * elemsize], elemsize * (v->size - pos));
             memcpy(&v->ptr[pos * elemsize], e, elemsize);
         }
     }
